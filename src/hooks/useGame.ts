@@ -1,8 +1,6 @@
-// src/hooks/useGame.ts
-import { useEffect, useState } from 'react'
+import { useState, useEffect } from 'react'
 
-interface Destination {
-  _id: string
+interface Question {
   city: string
   country: string
   clues: string[]
@@ -11,28 +9,62 @@ interface Destination {
 }
 
 const useGame = () => {
-  const [questions, setQuestions] = useState<Destination[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [questions, setQuestions] = useState<Question[]>([])
+  const [cities, setCities] = useState<string[]>([])
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0)
+  const [score, setScore] = useState<number>(0)
+  const [options, setOptions] = useState<string[]>([])
 
   useEffect(() => {
-    const fetchQuestions = async () => {
+    const fetchGameData = async () => {
       try {
-        const response = await fetch('http://localhost:4000/game/start')
-        if (!response.ok) throw new Error('Failed to fetch questions')
-        const data = await response.json()
-        setQuestions(data)
-      } catch (err) {
-        setError((err as Error).message)
-      } finally {
-        setLoading(false)
+        const questionResponse = await fetch('http://localhost:4000/game/start')
+        const questionData: Question[] = await questionResponse.json()
+        setQuestions(questionData)
+
+        const citiesResponse = await fetch('http://localhost:4000/game/cities')
+        const citiesData: string[] = await citiesResponse.json()
+        setCities(citiesData)
+
+        if (questionData.length > 0) {
+          setOptions(generateOptions(questionData[0], citiesData))
+        }
+      } catch (error) {
+        console.error('Error fetching game data:', error)
       }
     }
-
-    fetchQuestions()
+    fetchGameData()
   }, [])
 
-  return { questions, loading, error }
+  const generateOptions = (
+    question: Question,
+    allCities: string[]
+  ): string[] => {
+    const incorrectOptions = allCities
+      .filter((city) => city !== question.city)
+      .sort(() => 0.5 - Math.random())
+      .slice(0, 3)
+    return [...incorrectOptions, question.city].sort(() => 0.5 - Math.random())
+  }
+
+  const handleAnswer = (selected: string) => {
+    const isCorrect = selected === questions[currentQuestionIndex].city
+    if (isCorrect) setScore(score + 1)
+    setTimeout(() => {
+      const nextIndex = currentQuestionIndex + 1
+      if (nextIndex < questions.length) {
+        setCurrentQuestionIndex(nextIndex)
+        setOptions(generateOptions(questions[nextIndex], cities))
+      }
+    }, 1000)
+  }
+
+  return {
+    question: questions[currentQuestionIndex],
+    options,
+    score,
+    handleAnswer
+  }
 }
 
 export default useGame
