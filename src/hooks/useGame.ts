@@ -18,7 +18,7 @@ const useGame = () => {
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
-        const response = await fetch('/game/clue')
+        const response = await fetch('http://localhost:4000/game/start')
         if (!response.ok) throw new Error('Failed to fetch questions')
         const data = await response.json()
         setQuestions(data)
