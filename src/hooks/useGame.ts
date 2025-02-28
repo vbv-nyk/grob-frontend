@@ -1,69 +1,58 @@
+import { fetchQuestions } from 'api/gameApi'
 import { useState, useEffect } from 'react'
 
 interface Question {
+  _id: string
   city: string
   country: string
   clues: string[]
   fun_fact: string[]
-  trivia: string[]
 }
 
 const useGame = () => {
   const [questions, setQuestions] = useState<Question[]>([])
-  const [cities, setCities] = useState<string[]>([])
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0)
-  const [score, setScore] = useState<number>(0)
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const [options, setOptions] = useState<string[]>([])
+  const [score, setScore] = useState(0)
 
   useEffect(() => {
-    const fetchGameData = async () => {
-      try {
-        const questionResponse = await fetch('http://localhost:4000/game/start')
-        const questionData: Question[] = await questionResponse.json()
-        setQuestions(questionData)
-
-        const citiesResponse = await fetch('http://localhost:4000/game/cities')
-        const citiesData: string[] = await citiesResponse.json()
-        setCities(citiesData)
-
-        if (questionData.length > 0) {
-          setOptions(generateOptions(questionData[0], citiesData))
-        }
-      } catch (error) {
-        console.error('Error fetching game data:', error)
-      }
+    const loadQuestions = async () => {
+      const data = await fetchQuestions()
+      setQuestions(data)
+      setOptions(generateOptions(data[0], data))
     }
-    fetchGameData()
+    loadQuestions()
   }, [])
 
-  const generateOptions = (
-    question: Question,
-    allCities: string[]
-  ): string[] => {
-    const incorrectOptions = allCities
+  const generateOptions = (question: Question, allQuestions: Question[]) => {
+    const incorrectOptions = allQuestions
+      .map((q) => q.city)
       .filter((city) => city !== question.city)
-      .sort(() => 0.5 - Math.random())
+      .sort(() => Math.random() - 0.5)
       .slice(0, 3)
-    return [...incorrectOptions, question.city].sort(() => 0.5 - Math.random())
+    return [question.city, ...incorrectOptions].sort(() => Math.random() - 0.5)
   }
 
-  const handleAnswer = (selected: string) => {
-    const isCorrect = selected === questions[currentQuestionIndex].city
-    if (isCorrect) setScore(score + 1)
-    setTimeout(() => {
-      const nextIndex = currentQuestionIndex + 1
-      if (nextIndex < questions.length) {
-        setCurrentQuestionIndex(nextIndex)
-        setOptions(generateOptions(questions[nextIndex], cities))
-      }
-    }, 1000)
+  const handleAnswer = (selectedOption: string) => {
+    const isCorrect = selectedOption === questions[currentQuestionIndex].city
+    if (isCorrect) setScore((prevScore) => prevScore + 1)
+    return isCorrect
+  }
+
+  const nextQuestion = () => {
+    const nextIndex = currentQuestionIndex + 1
+    if (nextIndex < questions.length) {
+      setCurrentQuestionIndex(nextIndex)
+      setOptions(generateOptions(questions[nextIndex], questions))
+    }
   }
 
   return {
     question: questions[currentQuestionIndex],
     options,
     score,
-    handleAnswer
+    handleAnswer,
+    nextQuestion
   }
 }
 
