@@ -6,6 +6,8 @@ interface Question {
   country: string
   clues: string[]
   fun_fact: string[]
+  _id: string
+  correct: boolean | null
 }
 
 const useGame = () => {
@@ -14,15 +16,17 @@ const useGame = () => {
   const [options, setOptions] = useState<string[]>([])
   const [isGameOver, setIsGameOver] = useState(false)
   const [score, setScore] = useState(0)
+  const [challengeUrl, setChallengeUrl] = useState<string | null>(null)
 
   useEffect(() => {
-    const loadQuestions = async () => {
-      const data = await fetchQuestions()
-      setQuestions(data)
-      setOptions(generateOptions(data[0], data))
-    }
     loadQuestions()
   }, [])
+
+  const loadQuestions = async () => {
+    const data = await fetchQuestions()
+    setQuestions(data)
+    setOptions(generateOptions(data[0], data))
+  }
 
   const generateOptions = (question: Question, allQuestions: Question[]) => {
     const incorrectOptions = allQuestions
@@ -35,6 +39,9 @@ const useGame = () => {
 
   const handleAnswer = (selectedOption: string) => {
     const isCorrect = selectedOption === questions[currentQuestionIndex].city
+    const modifiedQuestion = Array.from(questions)
+    modifiedQuestion[currentQuestionIndex].correct = isCorrect
+    setQuestions(modifiedQuestion)
     if (isCorrect) setScore((prevScore) => prevScore + 1)
     return isCorrect
   }
@@ -49,13 +56,53 @@ const useGame = () => {
     }
   }
 
+  const restartGame = () => {
+    setScore(0)
+    setCurrentQuestionIndex(0)
+    setIsGameOver(false)
+    setChallengeUrl(null)
+    loadQuestions()
+  }
+
+  const createChallenge = async (username: string) => {
+    if (!username) return
+
+    console.log(questions)
+    try {
+      const response = await fetch('http://localhost:4000/challenge/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username,
+          questions: questions.map((q) => ({
+            questionId: q._id,
+            correct: q.correct || false
+          })),
+          score
+        })
+      })
+
+      const data = await response.json()
+      if (response.ok) {
+        setChallengeUrl(
+          `${window.location.origin}/challenge/${data.challengeId}`
+        )
+      }
+    } catch (error) {
+      console.error('Failed to create challenge:', error)
+    }
+  }
+
   return {
     question: questions[currentQuestionIndex],
     options,
     score,
     handleAnswer,
     nextQuestion,
-    isGameOver
+    isGameOver,
+    restartGame,
+    createChallenge,
+    challengeUrl
   }
 }
 

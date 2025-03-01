@@ -4,10 +4,21 @@ import { motion } from 'framer-motion'
 import useGame from 'hooks/useGame'
 import QuizFeedback from 'components/QuizFeedback'
 import EmojiRain from 'components/effects/EmojiRain'
+import GameOver from 'components/GameOver'
 
 const Game = () => {
-  const { question, options, score, handleAnswer, nextQuestion, isGameOver } =
-    useGame()
+  const {
+    question,
+    options,
+    score,
+    handleAnswer,
+    nextQuestion,
+    isGameOver,
+    restartGame,
+    createChallenge,
+    challengeUrl
+  } = useGame()
+
   const [selectedOption, setSelectedOption] = useState<string | null>(null)
   const [showConfetti, setShowConfetti] = useState(false)
   const [funFact, setFunFact] = useState<string | null>(null)
@@ -18,20 +29,16 @@ const Game = () => {
         Loading...
       </div>
     )
+
   if (isGameOver) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600 p-4 text-white">
-        <motion.h1 className="text-5xl font-extrabold" animate={{ scale: 1.1 }}>
-          Game Over!
-        </motion.h1>
-        <p className="mt-4 text-2xl">Your Final Score: {score} / 10</p>
-        <button
-          onClick={() => window.location.reload()}
-          className="mt-6 rounded-lg bg-yellow-400 px-6 py-3 text-lg font-bold text-black shadow-lg hover:bg-yellow-500"
-        >
-          Play Again
-        </button>
-      </div>
+      <GameOver
+        score={score}
+        questions={[]}
+        onRestart={restartGame}
+        onCreateChallenge={createChallenge}
+        challengeUrl={challengeUrl}
+      />
     )
   }
 
