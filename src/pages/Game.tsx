@@ -2,6 +2,7 @@ import useGame from 'hooks/useGame'
 import { useState } from 'react'
 import Confetti from 'react-confetti'
 import { motion } from 'framer-motion'
+import QuizFeedback from 'components/QuizFeedback'
 
 const Game = () => {
   const { question, options, score, handleAnswer, nextQuestion, isGameOver } =
@@ -39,7 +40,7 @@ const Game = () => {
     if (!selectedOption) return 'bg-blue-500 hover:bg-blue-600'
     if (option === question.city) return 'bg-green-800'
     if (option === selectedOption) return 'bg-red-600'
-    return 'bg-gray-800'
+    return 'bg-gray-700'
   }
 
   return (
@@ -59,45 +60,39 @@ const Game = () => {
       >
         Clue: {question.clues[0]}
       </motion.p>
-      <div className="mt-4 grid grid-cols-2 gap-4">
-        {options.map((option, index) => (
-          <motion.button
-            key={index}
-            onClick={() => handleSelection(option)}
-            className={`rounded-lg p-3 text-white shadow-md transition hover:scale-105 ${getButtonColor(
-              option
-            )}`}
-            disabled={!!selectedOption}
-            animate={{ scale: selectedOption ? 1.1 : 1 }}
-          >
-            {option}
-          </motion.button>
-        ))}
-      </div>
-      {selectedOption && (
-        <motion.div
-          className="mt-4 text-xl"
-          animate={{ opacity: 1 }}
-          initial={{ opacity: 0 }}
+      {/* <p className="mt-4 text-xl">Score: {score} / 10</p> */}
+      <div className="flex flex-wrap items-center justify-around">
+        <div
+          className={`mt-4 grid grid-cols-2 ${
+            selectedOption && 'flex-col'
+          }  justify-center gap-4`}
         >
-          <p className="font-bold">
-            {selectedOption === question.city ? '🎉 Correct!' : '😢 Incorrect!'}
-          </p>
-          <p className="text-md mt-2 text-gray-700">Fun Fact: {funFact}</p>
-          <button
-            onClick={() => {
-              setSelectedOption(null)
-              setShowConfetti(false)
-              setFunFact(null)
-              nextQuestion()
-            }}
-            className="mt-4 rounded-lg bg-green-500 px-4 py-2 text-white shadow-md transition hover:bg-green-600"
-          >
-            Next Question
-          </button>
-        </motion.div>
-      )}
-      <p className="mt-4 text-xl">Score: {score}</p>
+          {options.map((option, index) => (
+            <motion.button
+              key={index}
+              onClick={() => handleSelection(option)}
+              className={`rounded-lg p-3 text-white shadow-md transition hover:scale-105 ${getButtonColor(
+                option
+              )}`}
+              disabled={!!selectedOption}
+              animate={{ scale: selectedOption ? 1.1 : 1 }}
+            >
+              {option}
+            </motion.button>
+          ))}
+        </div>
+        {selectedOption && (
+          <QuizFeedback
+            funFact={funFact}
+            nextQuestion={nextQuestion}
+            question={question}
+            selectedOption={selectedOption}
+            setShowConfetti={setShowConfetti}
+            setFunFact={setFunFact}
+            setSelectedOption={setSelectedOption}
+          />
+        )}
+      </div>
     </div>
   )
 }
