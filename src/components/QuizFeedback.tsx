@@ -30,7 +30,7 @@ export default function QuizFeedback({
 
   return (
     <motion.div
-      className="mt-6 min-h-[100px] min-w-[300px]  max-w-md flex-[0.8] rounded-xl border border-gray-200 bg-white p-6 shadow-lg"
+      className="mt-6 min-w-[300px] max-w-md rounded-xl border border-gray-200 bg-white p-6 shadow-lg"
       initial={{ opacity: 0, scale: 0 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0 }}

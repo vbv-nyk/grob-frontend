@@ -1,7 +1,7 @@
-import useGame from 'hooks/useGame'
 import { useState } from 'react'
 import Confetti from 'react-confetti'
 import { motion, AnimatePresence } from 'framer-motion'
+import useGame from 'hooks/useGame'
 import QuizFeedback from 'components/QuizFeedback'
 
 const Game = () => {
@@ -11,15 +11,22 @@ const Game = () => {
   const [showConfetti, setShowConfetti] = useState(false)
   const [funFact, setFunFact] = useState<string | null>(null)
 
-  if (!question) return <div>Loading...</div>
+  if (!question)
+    return (
+      <div className="flex min-h-screen items-center justify-center text-2xl">
+        Loading...
+      </div>
+    )
   if (isGameOver) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-gray-100 p-4">
-        <h1 className="text-4xl font-bold">Game Over!</h1>
-        <p className="mt-4 text-xl">Your Final Score: {score} / 10</p>
+      <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600 p-4 text-white">
+        <motion.h1 className="text-5xl font-extrabold" animate={{ scale: 1.1 }}>
+          Game Over!
+        </motion.h1>
+        <p className="mt-4 text-2xl">Your Final Score: {score} / 10</p>
         <button
           onClick={() => window.location.reload()}
-          className="mt-4 rounded-lg bg-blue-500 px-4 py-2 text-white shadow-md transition hover:bg-blue-600"
+          className="mt-6 rounded-lg bg-yellow-400 px-6 py-3 text-lg font-bold text-black shadow-lg hover:bg-yellow-500"
         >
           Play Again
         </button>
@@ -36,73 +43,62 @@ const Game = () => {
     )
   }
 
-  const getButtonColor = (option: string) => {
-    if (!selectedOption) return 'bg-blue-500 hover:bg-blue-600'
-    if (option === question.city) return 'bg-green-800'
-    if (option === selectedOption) return 'bg-red-600'
-    return 'bg-gray-700'
+  const getButtonStyle = (option: string) => {
+    if (!selectedOption) return 'bg-blue-600 hover:bg-blue-700'
+    if (option === question.city) return 'bg-green-600'
+    if (option === selectedOption) return 'bg-red-500'
+    return 'bg-gray-500'
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-gray-100 p-4">
+    <motion.div className="flex min-h-screen flex-col items-center justify-center bg-gray-100 p-6">
+      {showConfetti && <Confetti />}
       <motion.h1
-        className="mb-4 text-3xl font-bold"
-        animate={{ opacity: 1, y: 0 }}
-        initial={{ opacity: 0, y: -20 }}
+        className="mb-4 text-4xl font-extrabold text-gray-800"
+        animate={{ y: 0, opacity: 1 }}
+        initial={{ y: -20, opacity: 0 }}
       >
         Guess the City
       </motion.h1>
       <motion.p
-        className="mb-2 text-lg"
+        className="mb-4 text-xl text-gray-700"
         animate={{ opacity: 1 }}
         initial={{ opacity: 0 }}
       >
         Clue: {question.clues[0]}
       </motion.p>
-      {/* <p className="mt-4 text-xl">Score: {score} / 10</p> */}
-      <div className="flex items-center justify-around">
-        {showConfetti && <Confetti />}
-        <AnimatePresence mode="wait">
-          <motion.div
-            className={`mt-4 grid grid-cols-2 ${
-              selectedOption && 'flex-col'
-            }  justify-center gap-4`}
-            initial={{ x: -0 }}
-            animate={{
-              scale: selectedOption ? 1 : 1.1,
-              x: selectedOption ? -20 : 0
-            }}
-            transition={{ duration: 0.5 }}
+      <motion.div
+        className="grid grid-cols-2 gap-4"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+      >
+        {options.map((option, index) => (
+          <button
+            key={index}
+            onClick={() => handleSelection(option)}
+            className={`rounded-lg p-3 text-lg font-semibold text-white transition-transform hover:scale-105 ${getButtonStyle(
+              option
+            )}`}
+            disabled={!!selectedOption}
           >
-            {options.map((option, index) => (
-              <button
-                key={index}
-                onClick={() => handleSelection(option)}
-                className={`rounded-lg p-3 text-white shadow-md transition hover:scale-105 ${getButtonColor(
-                  option
-                )}`}
-                disabled={!!selectedOption}
-              >
-                {option}
-              </button>
-            ))}
-          </motion.div>
-        </AnimatePresence>
-        <AnimatePresence>
-          {selectedOption && (
-            <QuizFeedback
-              funFact={funFact}
-              nextQuestion={nextQuestion}
-              question={question}
-              selectedOption={selectedOption}
-              setShowConfetti={setShowConfetti}
-              setFunFact={setFunFact}
-              setSelectedOption={setSelectedOption}
-            />
-          )}
-        </AnimatePresence>
-      </div>
-    </div>
+            {option}
+          </button>
+        ))}
+      </motion.div>
+      <AnimatePresence>
+        {selectedOption && (
+          <QuizFeedback
+            funFact={funFact}
+            nextQuestion={nextQuestion}
+            question={question}
+            selectedOption={selectedOption}
+            setShowConfetti={setShowConfetti}
+            setFunFact={setFunFact}
+            setSelectedOption={setSelectedOption}
+          />
+        )}
+      </AnimatePresence>
+    </motion.div>
   )
 }
 
