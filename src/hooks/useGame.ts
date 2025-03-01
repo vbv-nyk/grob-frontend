@@ -22,6 +22,7 @@ export type ChallengerData = {
 const useGame = (challengeId?: string) => {
   const [questions, setQuestions] = useState<Question[]>([])
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
+  const [isCheckingAnswer, setIsCheckingAnswer] = useState(false)
   const [isGameOver, setIsGameOver] = useState(false)
   const [correctCount, setCorrectCount] = useState(0)
   const [incorrectCount, setIncorrectCount] = useState(0)
@@ -74,7 +75,9 @@ const useGame = (challengeId?: string) => {
         })
       })
 
+      setIsCheckingAnswer(true)
       const data = await response.json()
+      setIsCheckingAnswer(false)
 
       if (!response.ok) {
         console.error('Error verifying answer:', data.error)
@@ -111,6 +114,8 @@ const useGame = (challengeId?: string) => {
   const nextQuestion = () => {
     const nextIndex = currentQuestionIndex + 1
     if (nextIndex < 10 && nextIndex < questions.length) {
+      setCorrectCity(null)
+      setIsCorrect(false)
       setCurrentQuestionIndex(nextIndex)
     } else {
       setIsGameOver(true)
@@ -119,6 +124,8 @@ const useGame = (challengeId?: string) => {
 
   const restartGame = () => {
     setScore(0)
+    setCorrectCount(0)
+    setIncorrectCount(0)
     setCurrentQuestionIndex(0)
     setIsGameOver(false)
     setChallengeUrl(null)
@@ -176,7 +183,8 @@ const useGame = (challengeId?: string) => {
     questions,
     correctCount,
     incorrectCount,
-    isCorrect
+    isCorrect,
+    isCheckingAnswer
   }
 }
 

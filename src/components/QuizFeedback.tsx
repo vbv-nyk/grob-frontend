@@ -4,7 +4,6 @@ type QuizFeedbackProps = {
   isCorrect: boolean
   funFact: string | null
   nextQuestion: () => void
-  setShowConfetti: React.Dispatch<React.SetStateAction<boolean>>
   setSelectedOption: React.Dispatch<React.SetStateAction<string | null>>
   setFunFact: React.Dispatch<React.SetStateAction<string | null>>
 }
@@ -13,13 +12,10 @@ export default function QuizFeedback({
   isCorrect,
   funFact,
   nextQuestion,
-  setShowConfetti,
   setSelectedOption,
   setFunFact
 }: QuizFeedbackProps) {
   const handleNext = () => {
-    setShowConfetti(false)
-
     // Animate out fun fact before switching to the next question
     setSelectedOption(null)
     setFunFact(null)

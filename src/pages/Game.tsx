@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import Confetti from 'react-confetti'
-import { motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import useGame from 'hooks/useGame'
 import QuizFeedback from 'components/QuizFeedback'
 import EmojiRain from 'components/effects/EmojiRain'
@@ -26,13 +26,13 @@ const Game = () => {
   } = useGame(challengeId)
 
   const [selectedOption, setSelectedOption] = useState<string | null>(null)
-  const [showConfetti, setShowConfetti] = useState(false)
   const [funFact, setFunFact] = useState<string | null>(null)
 
   // New state to manage the challenge welcome screen
   const [showWelcome, setShowWelcome] = useState(false)
   const [gameStarted, setGameStarted] = useState(false)
 
+  console.log(selectedOption, correctCity)
   // Effect to show welcome screen when there's challenger data
   useEffect(() => {
     if (!gameStarted && !isGameOver) {
@@ -190,21 +190,26 @@ const Game = () => {
     setSelectedOption(option)
     console.log(challengerData)
     handleAnswer(option)
-    setShowConfetti(selectedOption === correctCity)
     setFunFact(question.funFact)
   }
 
   const getButtonStyle = (option: string) => {
-    if (!selectedOption) return 'bg-blue-600 hover:bg-blue-700'
-    if (option === correctCity) return 'bg-green-600'
-    if (option == selectedOption && option != correctCity) return 'bg-red-600'
+    if (correctCity == null && selectedOption) {
+      return 'bg-gray-700'
+    }
+    if (correctCity == null) {
+      return 'bg-blue-600 hover:bg-blue-700'
+    }
+    if (option == correctCity) return 'bg-green-600 transition'
+    if (option == selectedOption && selectedOption != correctCity)
+      return 'bg-red-600'
     return 'bg-gray-700'
   }
 
   return (
     <motion.div className="flex min-h-screen flex-col items-center justify-center bg-gray-100 p-6">
-      {showConfetti && <Confetti />}
-      {selectedOption && !showConfetti && <EmojiRain />}
+      {correctCity && isCorrect && <Confetti />}
+      {correctCity && !isCorrect && <EmojiRain />}
       <motion.div
         className="flex flex-col items-center"
         animate={{ y: selectedOption ? 10 : 0 }}
@@ -241,15 +246,19 @@ const Game = () => {
           ))}
         </div>
       </motion.div>
-      {selectedOption && (
-        <QuizFeedback
-          funFact={funFact}
-          nextQuestion={nextQuestion}
-          isCorrect={isCorrect}
-          setShowConfetti={setShowConfetti}
-          setFunFact={setFunFact}
-          setSelectedOption={setSelectedOption}
-        />
+      {selectedOption && correctCity && (
+        <AnimatePresence mode="wait">
+          <QuizFeedback
+            funFact={funFact}
+            nextQuestion={() => {
+              nextQuestion()
+              setSelectedOption(null)
+            }}
+            isCorrect={isCorrect}
+            setFunFact={setFunFact}
+            setSelectedOption={setSelectedOption}
+          />
+        </AnimatePresence>
       )}
     </motion.div>
   )
