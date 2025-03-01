@@ -1,5 +1,5 @@
 import { fetchQuestions } from 'api/gameApi'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 
 export interface Question {
   city: string
@@ -32,21 +32,13 @@ const useGame = (challengeId?: string) => {
     null
   )
 
-  useEffect(() => {
-    if (challengeId) {
-      loadChallengeData(challengeId)
-    } else {
-      loadQuestions()
-    }
-  }, [challengeId])
-
-  const loadQuestions = async () => {
+  const loadQuestions = useCallback(async () => {
     const data = await fetchQuestions()
     setQuestions(data)
     setOptions(generateOptions(data[0], data))
-  }
+  }, [])
 
-  const loadChallengeData = async (challengeId: string) => {
+  const loadChallengeData = useCallback(async (challengeId: string) => {
     try {
       const response = await fetch(
         `http://localhost:4000/challenge/${challengeId}`
@@ -69,7 +61,14 @@ const useGame = (challengeId?: string) => {
     } catch (error) {
       console.error('Failed to load challenge data:', error)
     }
-  }
+  }, [])
+  useEffect(() => {
+    if (challengeId) {
+      loadChallengeData(challengeId)
+    } else {
+      loadQuestions()
+    }
+  }, [challengeId, loadChallengeData, loadQuestions])
 
   const generateOptions = (question: Question, allQuestions: Question[]) => {
     const incorrectOptions = allQuestions
@@ -127,10 +126,20 @@ const useGame = (challengeId?: string) => {
       })
 
       const data = await response.json()
+
       if (response.ok) {
         setChallengeUrl(
           `${window.location.origin}/challenge/${data.challengeId}`.trim()
         )
+      } else {
+        // Handle case where username is already taken
+        if (data.error === 'Username already taken') {
+          alert(
+            'This username is already taken. Please choose a different one.'
+          )
+        } else {
+          console.error('Error creating challenge:', data.error)
+        }
       }
     } catch (error) {
       console.error('Failed to create challenge:', error)
