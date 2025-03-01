@@ -2,12 +2,13 @@ import { fetchQuestions } from 'api/gameApi'
 import { useState, useEffect, useCallback } from 'react'
 
 export interface Question {
-  city: string
-  country: string
-  clues: string[]
-  fun_fact: string[]
-  _id: string
-  correct: boolean | null
+  id: string // ID of the city object (used for backend verification)
+  question: string // Generic question (e.g., "Which city is shown in the image?")
+  image: string // URL of the city image
+  options: string[] // 4 shuffled answer choices (1 correct, 3 incorrect)
+  funFact: string // A fun fact about the city
+  clue: string // A hint for the player
+  correct: boolean
 }
 
 type ChallengeData = {
@@ -29,6 +30,7 @@ const useGame = (challengeId?: string) => {
   const [correctCount, setCorrectCount] = useState(0)
   const [incorrectCount, setIncorrectCount] = useState(0)
   const [score, setScore] = useState(0)
+  const [isCorrect, setIsCorrect] = useState(false)
   const [challengeUrl, setChallengeUrl] = useState<string | null>(null)
   const [challengerData, setChallengerData] = useState<ChallengerData | null>(
     null
@@ -37,7 +39,8 @@ const useGame = (challengeId?: string) => {
   const loadQuestions = useCallback(async () => {
     const data = await fetchQuestions()
     setQuestions(data)
-    setOptions(generateOptions(data[0], data))
+    console.log(data)
+    setOptions(data[0].options)
   }, [])
 
   const loadChallengeData = useCallback(async (challengeId: string) => {
@@ -46,20 +49,7 @@ const useGame = (challengeId?: string) => {
         `http://localhost:4000/challenge/${challengeId}`
       )
       const data = await response.json()
-      if (response.ok) {
-        setQuestions(data.questions)
-        setChallengerData({
-          username: data.challenger.username,
-          score: data.challenger.score,
-          challenges: data.questions.map(
-            (q: { _id: string; correct: boolean }) => ({
-              _id: q._id,
-              correct: q.correct
-            })
-          )
-        })
-        setOptions(generateOptions(data.questions[0], data.questions))
-      }
+      setQuestions(data.questions)
     } catch (error) {
       console.error('Failed to load challenge data:', error)
     }
@@ -72,34 +62,53 @@ const useGame = (challengeId?: string) => {
     }
   }, [challengeId, loadChallengeData, loadQuestions])
 
-  const generateOptions = (question: Question, allQuestions: Question[]) => {
-    const incorrectOptions = allQuestions
-      .map((q) => q.city)
-      .filter((city) => city !== question.city)
-      .sort(() => Math.random() - 0.5)
-      .slice(0, 3)
-    return [question.city, ...incorrectOptions].sort(() => Math.random() - 0.5)
-  }
+  const handleAnswer = async (selectedOption: string) => {
+    const currentQuestion = questions[currentQuestionIndex] // Get current question
 
-  const handleAnswer = (selectedOption: string) => {
-    const isCorrect = selectedOption === questions[currentQuestionIndex].city
-    const modifiedQuestions = [...questions]
-    modifiedQuestions[currentQuestionIndex].correct = isCorrect
-    setQuestions(modifiedQuestions)
-    if (isCorrect) {
-      setScore((prevScore) => prevScore + 1)
-      setCorrectCount((prevScore) => prevScore + 1)
-    } else {
-      setIncorrectCount((prevScore) => prevScore + 1)
+    try {
+      const response = await fetch('http://localhost:4000/game/submit-answer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          questionId: currentQuestion.id, // Send question ID
+          selectedCity: selectedOption // Send selected answer
+        })
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        console.error('Error verifying answer:', data.error)
+        return false
+      }
+
+      const tempIsCorrect = data.correct // Get result from backend
+
+      // Update question state
+      const modifiedQuestions = [...questions]
+      modifiedQuestions[currentQuestionIndex].correct = tempIsCorrect
+      setQuestions(modifiedQuestions)
+
+      // Update score counters
+      if (tempIsCorrect) {
+        setScore((prevScore) => prevScore + 1)
+        setCorrectCount((prevCount) => prevCount + 1)
+      } else {
+        setIncorrectCount((prevCount) => prevCount + 1)
+      }
+
+      setIsCorrect(tempIsCorrect)
+      return tempIsCorrect
+    } catch (error) {
+      console.error('Failed to submit answer:', error)
+      return false
     }
-    return isCorrect
   }
 
   const nextQuestion = () => {
     const nextIndex = currentQuestionIndex + 1
     if (nextIndex < 10 && nextIndex < questions.length) {
       setCurrentQuestionIndex(nextIndex)
-      setOptions(generateOptions(questions[nextIndex], questions))
     } else {
       setIsGameOver(true)
     }
@@ -125,7 +134,7 @@ const useGame = (challengeId?: string) => {
         body: JSON.stringify({
           username,
           questions: questions.map((q) => ({
-            questionId: q._id,
+            questionId: q.id,
             correct: q.correct || false
           })),
           score
@@ -166,7 +175,8 @@ const useGame = (challengeId?: string) => {
     createChallenge,
     questions,
     correctCount,
-    incorrectCount
+    incorrectCount,
+    isCorrect
   }
 }
 

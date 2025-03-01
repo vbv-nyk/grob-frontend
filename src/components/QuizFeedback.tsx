@@ -1,8 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion'
 
 type QuizFeedbackProps = {
-  selectedOption: string | null
-  question: { city: string }
+  isCorrect: boolean
   funFact: string | null
   nextQuestion: () => void
   setShowConfetti: React.Dispatch<React.SetStateAction<boolean>>
@@ -11,8 +10,7 @@ type QuizFeedbackProps = {
 }
 
 export default function QuizFeedback({
-  selectedOption,
-  question,
+  isCorrect,
   funFact,
   nextQuestion,
   setShowConfetti,
@@ -37,10 +35,10 @@ export default function QuizFeedback({
     >
       <p
         className={`text-xl font-bold ${
-          selectedOption === question.city ? 'text-green-600' : 'text-red-600'
+          isCorrect ? 'text-green-600' : 'text-red-600'
         }`}
       >
-        {selectedOption === question.city ? '🎉 Correct!' : '😢 Incorrect!'}
+        {isCorrect ? '🎉 Correct!' : '😢 Incorrect!'}
       </p>
 
       {/* Animated fun fact */}

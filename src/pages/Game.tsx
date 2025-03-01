@@ -21,7 +21,8 @@ const Game = () => {
     challengerData,
     questions,
     correctCount,
-    incorrectCount
+    incorrectCount,
+    isCorrect
   } = useGame(challengeId)
 
   const [selectedOption, setSelectedOption] = useState<string | null>(null)
@@ -190,17 +191,15 @@ const Game = () => {
 
   const handleSelection = (option: string) => {
     setSelectedOption(option)
-    const isCorrect = handleAnswer(option)
+    handleAnswer(option)
     setShowConfetti(isCorrect)
-    setFunFact(
-      question.fun_fact[Math.floor(Math.random() * question.fun_fact.length)]
-    )
+    setFunFact(question.funFact)
   }
 
-  const getButtonStyle = (option: string) => {
+  const getButtonStyle = () => {
     if (!selectedOption) return 'bg-blue-600 hover:bg-blue-700'
-    if (option === question.city) return 'bg-green-600'
-    if (option === selectedOption) return 'bg-red-500'
+    if (isCorrect) return 'bg-green-600'
+    if (!isCorrect) return 'bg-red-500'
     return 'bg-gray-500'
   }
 
@@ -228,15 +227,13 @@ const Game = () => {
             </h1>
           </div>
         </div>
-        <p className="mb-4 text-xl text-gray-700">Clue: {question.clues[0]}</p>
+        <p className="mb-4 text-xl text-gray-700">Clue: {question.question}</p>
         <div className="grid grid-cols-2 gap-4">
           {options.map((option, index) => (
             <button
               key={index}
               onClick={() => handleSelection(option)}
-              className={`rounded-lg p-3 text-lg font-semibold text-white transition-transform hover:scale-105 ${getButtonStyle(
-                option
-              )}`}
+              className={`rounded-lg p-3 text-lg font-semibold text-white transition-transform hover:scale-105 ${getButtonStyle()}`}
               disabled={!!selectedOption}
             >
               {option}
@@ -248,8 +245,7 @@ const Game = () => {
         <QuizFeedback
           funFact={funFact}
           nextQuestion={nextQuestion}
-          question={question}
-          selectedOption={selectedOption}
+          isCorrect={isCorrect}
           setShowConfetti={setShowConfetti}
           setFunFact={setFunFact}
           setSelectedOption={setSelectedOption}
