@@ -128,9 +128,9 @@ const useGame = (challengeId?: string) => {
 
       const data = await response.json()
       if (response.ok) {
-        setChallengeUrl(`
-          ${window.location.origin} / challenge / ${data.challengeId}
-        `)
+        setChallengeUrl(
+          `${window.location.origin}/challenge/${data.challengeId}`.trim()
+        )
       }
     } catch (error) {
       console.error('Failed to create challenge:', error)

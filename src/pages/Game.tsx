@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Confetti from 'react-confetti'
 import { motion } from 'framer-motion'
 import useGame from 'hooks/useGame'
@@ -26,7 +26,23 @@ const Game = () => {
   const [showConfetti, setShowConfetti] = useState(false)
   const [funFact, setFunFact] = useState<string | null>(null)
 
-  if (!question)
+  // New state to manage the challenge welcome screen
+  const [showChallengeWelcome, setShowChallengeWelcome] = useState(false)
+  const [gameStarted, setGameStarted] = useState(false)
+
+  // Effect to show welcome screen when there's challenger data
+  useEffect(() => {
+    if (challengerData && !gameStarted && !isGameOver) {
+      setShowChallengeWelcome(true)
+    }
+  }, [challengerData, gameStarted, isGameOver])
+
+  const handleAcceptChallenge = () => {
+    setShowChallengeWelcome(false)
+    setGameStarted(true)
+  }
+
+  if (!question && !showChallengeWelcome)
     return (
       <div className="flex min-h-screen items-center justify-center text-2xl">
         Loading...
@@ -43,6 +59,63 @@ const Game = () => {
         challengerData={challengerData}
         userData={questions}
       />
+    )
+  }
+
+  // Render challenge welcome screen
+  if (showChallengeWelcome && challengerData) {
+    const { username, score: challengerScore } = challengerData
+
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600 p-6 text-white"
+      >
+        <motion.div
+          initial={{ scale: 0.9 }}
+          animate={{ scale: 1 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="max-w-md rounded-xl bg-white/10 p-8 backdrop-blur-sm"
+        >
+          <h1 className="mb-6 text-center text-4xl font-extrabold">
+            Challenge Accepted?
+          </h1>
+
+          <div className="mb-8 flex flex-col items-center">
+            <div className="mb-4 flex size-24 items-center justify-center rounded-full bg-yellow-400 text-3xl font-bold text-black">
+              {challengerScore}/10
+            </div>
+            <p className="text-center text-2xl font-semibold">
+              {username} has challenged you!
+            </p>
+            <p className="mt-3 text-center">
+              Think you can beat their score in the City Knowledge Challenge?
+            </p>
+          </div>
+
+          <div className="flex flex-col space-y-4">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={handleAcceptChallenge}
+              className="rounded-lg bg-green-500 py-4 text-lg font-bold text-white shadow-lg transition hover:bg-green-600"
+            >
+              Accept Challenge
+            </motion.button>
+
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={restartGame}
+              className="rounded-lg bg-gray-200 py-3 text-gray-800 shadow-lg transition hover:bg-gray-300"
+            >
+              Start New Game
+            </motion.button>
+          </div>
+        </motion.div>
+      </motion.div>
     )
   }
 

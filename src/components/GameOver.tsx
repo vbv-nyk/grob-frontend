@@ -192,7 +192,7 @@ const GameOver: React.FC<GameOverProps> = ({
                       alt="Challenge Card"
                       className="max-w-full rounded-lg shadow-md"
                     />
-                    <div className="absolute bottom-2 right-2 rounded bg-white/80 px-2 py-1 text-xs">
+                    <div className="absolute bottom-2 right-2 rounded bg-white/20 px-2 py-1 text-xs">
                       Your challenge card
                     </div>
                   </div>
