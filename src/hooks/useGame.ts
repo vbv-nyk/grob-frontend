@@ -1,7 +1,7 @@
 import { fetchQuestions } from 'api/gameApi'
 import { useState, useEffect } from 'react'
 
-interface Question {
+export interface Question {
   city: string
   country: string
   clues: string[]
@@ -10,22 +10,65 @@ interface Question {
   correct: boolean | null
 }
 
-const useGame = () => {
+type ChallengeData = {
+  _id: string
+  correct: boolean
+}
+
+export type ChallengerData = {
+  username: string
+  score: number
+  challenges: ChallengeData[]
+}
+
+const useGame = (challengeId?: string) => {
   const [questions, setQuestions] = useState<Question[]>([])
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const [options, setOptions] = useState<string[]>([])
   const [isGameOver, setIsGameOver] = useState(false)
   const [score, setScore] = useState(0)
   const [challengeUrl, setChallengeUrl] = useState<string | null>(null)
+  const [challengerData, setChallengerData] = useState<ChallengerData | null>(
+    null
+  )
 
   useEffect(() => {
-    loadQuestions()
-  }, [])
+    if (challengeId) {
+      loadChallengeData(challengeId)
+    } else {
+      loadQuestions()
+    }
+  }, [challengeId])
 
   const loadQuestions = async () => {
     const data = await fetchQuestions()
     setQuestions(data)
     setOptions(generateOptions(data[0], data))
+  }
+
+  const loadChallengeData = async (challengeId: string) => {
+    try {
+      const response = await fetch(
+        `http://localhost:4000/challenge/${challengeId}`
+      )
+      const data = await response.json()
+      if (response.ok) {
+        setQuestions(data.questions)
+        setChallengerData({
+          username: data.challenger.username,
+          score: data.challenger.score,
+          challenges: data.questions.map(
+            (q: { _id: string; correct: boolean }) => ({
+              _id: q._id,
+              correct: q.correct
+            })
+          )
+        })
+        setOptions(generateOptions(data.questions[0], data.questions))
+      }
+    } catch (error) {
+      console.error('Failed to load challenge data:', error)
+    }
   }
 
   const generateOptions = (question: Question, allQuestions: Question[]) => {
@@ -39,9 +82,9 @@ const useGame = () => {
 
   const handleAnswer = (selectedOption: string) => {
     const isCorrect = selectedOption === questions[currentQuestionIndex].city
-    const modifiedQuestion = Array.from(questions)
-    modifiedQuestion[currentQuestionIndex].correct = isCorrect
-    setQuestions(modifiedQuestion)
+    const modifiedQuestions = [...questions]
+    modifiedQuestions[currentQuestionIndex].correct = isCorrect
+    setQuestions(modifiedQuestions)
     if (isCorrect) setScore((prevScore) => prevScore + 1)
     return isCorrect
   }
@@ -61,6 +104,7 @@ const useGame = () => {
     setCurrentQuestionIndex(0)
     setIsGameOver(false)
     setChallengeUrl(null)
+    setChallengerData(null)
     loadQuestions()
   }
 
@@ -84,9 +128,9 @@ const useGame = () => {
 
       const data = await response.json()
       if (response.ok) {
-        setChallengeUrl(
-          `${window.location.origin}/challenge/${data.challengeId}`
-        )
+        setChallengeUrl(`
+          ${window.location.origin} / challenge / ${data.challengeId}
+        `)
       }
     } catch (error) {
       console.error('Failed to create challenge:', error)
@@ -101,8 +145,10 @@ const useGame = () => {
     nextQuestion,
     isGameOver,
     restartGame,
+    challengeUrl,
+    challengerData,
     createChallenge,
-    challengeUrl
+    questions
   }
 }
 

@@ -1,9 +1,11 @@
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
+import { ChallengerData, Question } from 'hooks/useGame'
 
 interface GameOverProps {
   score: number
-  questions: { questionId: string; correct: boolean }[]
+  challengerData: ChallengerData | null
+  userData: Question[]
   onRestart: () => void
   onCreateChallenge: (username: string) => Promise<void>
   challengeUrl: string | null
@@ -13,7 +15,9 @@ const GameOver: React.FC<GameOverProps> = ({
   score,
   onRestart,
   onCreateChallenge,
-  challengeUrl
+  challengeUrl,
+  challengerData,
+  userData
 }) => {
   const [username, setUsername] = useState('')
   const [loading, setLoading] = useState(false)
@@ -31,6 +35,7 @@ const GameOver: React.FC<GameOverProps> = ({
     await onCreateChallenge(username)
     setLoading(false)
   }
+  console.log(userData, challengerData)
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600 p-4 text-white">

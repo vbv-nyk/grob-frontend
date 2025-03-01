@@ -7,6 +7,7 @@ import EmojiRain from 'components/effects/EmojiRain'
 import GameOver from 'components/GameOver'
 
 const Game = () => {
+  const challengeId = window.location.pathname.split('/')?.pop()
   const {
     question,
     options,
@@ -16,8 +17,10 @@ const Game = () => {
     isGameOver,
     restartGame,
     createChallenge,
-    challengeUrl
-  } = useGame()
+    challengeUrl,
+    challengerData,
+    questions
+  } = useGame(challengeId)
 
   const [selectedOption, setSelectedOption] = useState<string | null>(null)
   const [showConfetti, setShowConfetti] = useState(false)
@@ -34,10 +37,11 @@ const Game = () => {
     return (
       <GameOver
         score={score}
-        questions={[]}
         onRestart={restartGame}
         onCreateChallenge={createChallenge}
         challengeUrl={challengeUrl}
+        challengerData={challengerData}
+        userData={questions}
       />
     )
   }
