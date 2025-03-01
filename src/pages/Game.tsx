@@ -10,7 +10,6 @@ const Game = () => {
   const challengeId = window.location.pathname.split('/')?.pop()
   const {
     question,
-    options,
     score,
     handleAnswer,
     nextQuestion,
@@ -22,7 +21,8 @@ const Game = () => {
     questions,
     correctCount,
     incorrectCount,
-    isCorrect
+    isCorrect,
+    correctCity
   } = useGame(challengeId)
 
   const [selectedOption, setSelectedOption] = useState<string | null>(null)
@@ -51,7 +51,6 @@ const Game = () => {
         Loading...
       </div>
     )
-  console.log(question)
 
   if (isGameOver) {
     return (
@@ -68,9 +67,7 @@ const Game = () => {
 
   // Render challenge welcome screen
   if (showWelcome && challengerData) {
-    const { username, score: challengerScore } = challengerData
-
-    console.log(username, score)
+    const { username, score } = challengerData.challenger
     return (
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -90,7 +87,7 @@ const Game = () => {
 
           <div className="mb-8 flex flex-col items-center">
             <div className="mb-4 flex size-24 items-center justify-center rounded-full bg-yellow-400 text-3xl font-bold text-black">
-              {challengerScore}/10
+              {score}/10
             </div>
             <p className="text-center text-2xl font-semibold">
               {username} has challenged you!
@@ -191,16 +188,17 @@ const Game = () => {
 
   const handleSelection = (option: string) => {
     setSelectedOption(option)
+    console.log(challengerData)
     handleAnswer(option)
-    setShowConfetti(isCorrect)
+    setShowConfetti(selectedOption === correctCity)
     setFunFact(question.funFact)
   }
 
-  const getButtonStyle = () => {
+  const getButtonStyle = (option: string) => {
     if (!selectedOption) return 'bg-blue-600 hover:bg-blue-700'
-    if (isCorrect) return 'bg-green-600'
-    if (!isCorrect) return 'bg-red-500'
-    return 'bg-gray-500'
+    if (option === correctCity) return 'bg-green-600'
+    if (option == selectedOption && option != correctCity) return 'bg-red-600'
+    return 'bg-gray-700'
   }
 
   return (
@@ -227,13 +225,15 @@ const Game = () => {
             </h1>
           </div>
         </div>
-        <p className="mb-4 text-xl text-gray-700">Clue: {question.question}</p>
+        <p className="mb-4 text-xl text-gray-700">Clue: {question.clue}</p>
         <div className="grid grid-cols-2 gap-4">
-          {options.map((option, index) => (
+          {question.options.map((option, index) => (
             <button
               key={index}
               onClick={() => handleSelection(option)}
-              className={`rounded-lg p-3 text-lg font-semibold text-white transition-transform hover:scale-105 ${getButtonStyle()}`}
+              className={`rounded-lg p-3 text-lg font-semibold text-white transition-transform hover:scale-105 ${getButtonStyle(
+                option
+              )}`}
               disabled={!!selectedOption}
             >
               {option}

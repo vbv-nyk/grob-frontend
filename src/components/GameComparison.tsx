@@ -13,13 +13,14 @@ const ResultsComparison = ({
   // Calculate user score
   const userScore = userData.filter((item) => item.correct).length
 
+  console.log(challengerData, userData)
   // Helper to get challenger's answer for a question
   const getChallengerAnswer = (questionId: string) => {
-    const challenge = challengerData?.challenges.find(
-      (c) => c._id === questionId
-    )
+    const challenge = challengerData?.questions.find((c) => c.id === questionId)
     return challenge ? challenge.correct : false
   }
+
+  const { username, score } = challengerData.challenger
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-600 to-purple-700 p-6 text-white">
@@ -44,22 +45,20 @@ const ResultsComparison = ({
             <div className="flex flex-col items-center">
               <div className="mb-2 flex size-16 items-center justify-center rounded-full bg-pink-400">
                 <span className="text-2xl font-bold">
-                  {challengerData.username.charAt(0).toUpperCase()}
+                  {username.charAt(0).toUpperCase()}
                 </span>
               </div>
-              <div className="text-xl font-semibold">
-                {challengerData.score}/10
-              </div>
+              <div className="text-xl font-semibold">{score}/10</div>
             </div>
           </div>
         </motion.div>
 
         <div className="grid grid-cols-1 gap-6">
           {userData.map((question, index) => {
-            const challengerCorrect = getChallengerAnswer(question._id)
+            const challengerCorrect = getChallengerAnswer(question.id)
             return (
               <motion.div
-                key={question._id}
+                key={question.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: index * 0.1 }}
@@ -68,7 +67,7 @@ const ResultsComparison = ({
                 <div className="bg-gradient-to-r from-blue-800/50 to-purple-800/50 p-4">
                   <h3 className="text-xl font-bold">Question {index + 1}</h3>
                   <p className="text-lg">
-                    {question.city}, {question.country}
+                    {question.city} - {question.clue}
                   </p>
                 </div>
 
@@ -125,7 +124,7 @@ const ResultsComparison = ({
                   >
                     <div className="flex flex-col items-center">
                       <span className="font-semibold">
-                        {challengerData.username}&apos;s Answer
+                        {username}&apos;s Answer
                       </span>
                       <div className="mt-2 flex items-center">
                         {challengerCorrect ? (
