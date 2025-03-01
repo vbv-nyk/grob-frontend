@@ -26,6 +26,8 @@ const useGame = (challengeId?: string) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const [options, setOptions] = useState<string[]>([])
   const [isGameOver, setIsGameOver] = useState(false)
+  const [correctCount, setCorrectCount] = useState(0)
+  const [incorrectCount, setIncorrectCount] = useState(0)
   const [score, setScore] = useState(0)
   const [challengeUrl, setChallengeUrl] = useState<string | null>(null)
   const [challengerData, setChallengerData] = useState<ChallengerData | null>(
@@ -84,7 +86,12 @@ const useGame = (challengeId?: string) => {
     const modifiedQuestions = [...questions]
     modifiedQuestions[currentQuestionIndex].correct = isCorrect
     setQuestions(modifiedQuestions)
-    if (isCorrect) setScore((prevScore) => prevScore + 1)
+    if (isCorrect) {
+      setScore((prevScore) => prevScore + 1)
+      setCorrectCount((prevScore) => prevScore + 1)
+    } else {
+      setIncorrectCount((prevScore) => prevScore + 1)
+    }
     return isCorrect
   }
 
@@ -157,7 +164,9 @@ const useGame = (challengeId?: string) => {
     challengeUrl,
     challengerData,
     createChallenge,
-    questions
+    questions,
+    correctCount,
+    incorrectCount
   }
 }
 

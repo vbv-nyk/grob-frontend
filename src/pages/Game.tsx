@@ -19,7 +19,9 @@ const Game = () => {
     createChallenge,
     challengeUrl,
     challengerData,
-    questions
+    questions,
+    correctCount,
+    incorrectCount
   } = useGame(challengeId)
 
   const [selectedOption, setSelectedOption] = useState<string | null>(null)
@@ -214,9 +216,17 @@ const Game = () => {
           <h1 className="mb-4 text-4xl font-extrabold text-gray-800">
             Guess the City
           </h1>
-          <h1 className="mb-4 text-2xl font-extrabold text-gray-800">
-            Score: {score} / 10
-          </h1>
+          <div className="flex gap-4">
+            {/* <h1 className="text-md mb-4 font-extrabold text-gray-800">
+              Total Score: {score} / 10
+            </h1> */}
+            <h1 className="mb-4 font-extrabold text-green-800">
+              Correct: {correctCount} / 10
+            </h1>
+            <h1 className="mb-4 font-extrabold text-red-800">
+              Incorrect: {incorrectCount} / 10
+            </h1>
+          </div>
         </div>
         <p className="mb-4 text-xl text-gray-700">Clue: {question.clues[0]}</p>
         <div className="grid grid-cols-2 gap-4">
