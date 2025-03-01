@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import Confetti from 'react-confetti'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import useGame from 'hooks/useGame'
 import QuizFeedback from 'components/QuizFeedback'
+import EmojiRain from 'components/effects/EmojiRain'
 
 const Game = () => {
   const { question, options, score, handleAnswer, nextQuestion, isGameOver } =
@@ -53,51 +54,41 @@ const Game = () => {
   return (
     <motion.div className="flex min-h-screen flex-col items-center justify-center bg-gray-100 p-6">
       {showConfetti && <Confetti />}
-      <motion.h1
-        className="mb-4 text-4xl font-extrabold text-gray-800"
-        animate={{ y: 0, opacity: 1 }}
-        initial={{ y: -20, opacity: 0 }}
-      >
-        Guess the City
-      </motion.h1>
-      <motion.p
-        className="mb-4 text-xl text-gray-700"
-        animate={{ opacity: 1 }}
-        initial={{ opacity: 0 }}
-      >
-        Clue: {question.clues[0]}
-      </motion.p>
+      {selectedOption && !showConfetti && <EmojiRain />}
       <motion.div
-        className="grid grid-cols-2 gap-4"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
+        className="flex flex-col items-center"
+        animate={{ y: selectedOption ? 10 : 0 }}
       >
-        {options.map((option, index) => (
-          <button
-            key={index}
-            onClick={() => handleSelection(option)}
-            className={`rounded-lg p-3 text-lg font-semibold text-white transition-transform hover:scale-105 ${getButtonStyle(
-              option
-            )}`}
-            disabled={!!selectedOption}
-          >
-            {option}
-          </button>
-        ))}
+        <h1 className="mb-4 text-4xl font-extrabold text-gray-800">
+          Guess the City
+        </h1>
+        <p className="mb-4 text-xl text-gray-700">Clue: {question.clues[0]}</p>
+        <div className="grid grid-cols-2 gap-4">
+          {options.map((option, index) => (
+            <button
+              key={index}
+              onClick={() => handleSelection(option)}
+              className={`rounded-lg p-3 text-lg font-semibold text-white transition-transform hover:scale-105 ${getButtonStyle(
+                option
+              )}`}
+              disabled={!!selectedOption}
+            >
+              {option}
+            </button>
+          ))}
+        </div>
       </motion.div>
-      <AnimatePresence>
-        {selectedOption && (
-          <QuizFeedback
-            funFact={funFact}
-            nextQuestion={nextQuestion}
-            question={question}
-            selectedOption={selectedOption}
-            setShowConfetti={setShowConfetti}
-            setFunFact={setFunFact}
-            setSelectedOption={setSelectedOption}
-          />
-        )}
-      </AnimatePresence>
+      {selectedOption && (
+        <QuizFeedback
+          funFact={funFact}
+          nextQuestion={nextQuestion}
+          question={question}
+          selectedOption={selectedOption}
+          setShowConfetti={setShowConfetti}
+          setFunFact={setFunFact}
+          setSelectedOption={setSelectedOption}
+        />
+      )}
     </motion.div>
   )
 }
