@@ -1,80 +1,98 @@
-![reactjs-vite-tailwindcss-boilerplate](https://user-images.githubusercontent.com/16243531/217138979-b854309c-4742-4275-a705-f9fec5158217.jpg)
+# 🌍 Globetrotter: The Ultimate Travel Guessing Game 🌎
 
-# React Tailwindcss Boilerplate build with Vite
+## 🏆 Software Engineering Assignment Project
 
-This is a boilerplate build with Vite, React 18, TypeScript, Vitest, Testing Library, TailwindCSS 3, Eslint and Prettier.
+### 📝 Project Overview
+Globetrotter is an engaging web application that challenges players to guess destinations based on cryptic clues. The game combines fun, learning, and global exploration through an interactive guessing experience.
 
-## What is inside?
+### 🎯 Project Requirements Fulfilled
+- ✅ AI-Enhanced Dataset of 100+ Destinations
+- ✅ Interactive Guessing Gameplay
+- ✅ Dynamic Feedback Mechanism
+- ✅ User Score Tracking
+- ✅ "Challenge a Friend" Social Feature
 
-This project uses many tools like:
+### 🛠 Tech Stack
+- **Frontend**: React 18, TypeScript
+- **Styling**: TailwindCSS
+- **Build Tool**: Vite
+- **Testing**: Vitest, Testing Library
+- **State Management**: [Add your state management solution]
+- **Backend**: [Add your backend technology]
 
-- [Vite](https://vitejs.dev)
-- [ReactJS](https://reactjs.org)
-- [TypeScript](https://www.typescriptlang.org)
-- [Vitest](https://vitest.dev)
-- [Testing Library](https://testing-library.com)
-- [Tailwindcss](https://tailwindcss.com)
-- [Eslint](https://eslint.org)
-- [Prettier](https://prettier.io)
+### 🚀 Features
 
-## Getting Started
+#### Core Gameplay
+- Random destination clues presentation
+- Multiple-choice destination guessing
+- Immediate feedback with:
+  - 🎉 Confetti animation for correct answers
+  - 😢 Sad-face animation for incorrect answers
+- Fun fact revelation after each guess
+- Persistent score tracking
 
-### Install
+#### Social Engagement
+- Username registration
+- "Challenge a Friend" feature
+- WhatsApp invite link generation
+- Shared game experience
 
-Create the project.
+### 🔧 Prerequisites
+- Node.js (v18+)
+- pnpm package manager
 
+### 🏁 Getting Started
+
+#### Installation
 ```bash
-pnpm dlx degit joaopaulomoraes/reactjs-vite-tailwindcss-boilerplate my-app
-```
+# Clone the repository
+git clone https://github.com/yourusername/globetrotter.git
 
-Access the project directory.
+# Navigate to project directory
+cd globetrotter
 
-```bash
-cd my-app
-```
-
-Install dependencies.
-
-```bash
+# Install dependencies
 pnpm install
 ```
 
-Serve with hot reload at <http://localhost:5173>.
-
+#### Development
 ```bash
+# Start development server
 pnpm run dev
-```
 
-### Lint
+# Run tests
+pnpm run test
 
-```bash
-pnpm run lint
-```
-
-### Typecheck
-
-```bash
-pnpm run typecheck
-```
-
-### Build
-
-```bash
+# Build for production
 pnpm run build
 ```
 
-### Test
+### 🌐 Deployment
+- Deployed on: [Deployment Platform]
+- Live URL: [Your Live URL]
 
-```bash
-pnpm run test
-```
+### 🧪 Testing
+- Unit Tests: Comprehensive test coverage
+- Integration Tests: [Describe your testing approach]
 
-View and interact with your tests via UI.
+### 🔮 Future Enhancements
+- Timed game mode
+- Image-based destination clues
+- Multiplayer leaderboard
+- Expanded destination database
 
-```bash
-pnpm run test:ui
-```
+### 📚 Learning Highlights
+- AI-Assisted Dataset Generation
+- Scalable Frontend Architecture
+- Interactive User Experience Design
 
-## License
+### 📫 Contact
+[Your Name]
+[Your Email/LinkedIn]
 
-This project is licensed under the MIT License.
+### 🙌 Acknowledgements
+- Assignment Inspiration: [Company Name]
+- AI Tools Used: [List AI tools]
+
+### 📜 License
+[Your Chosen License]
