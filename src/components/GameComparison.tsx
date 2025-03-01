@@ -167,12 +167,6 @@ const ResultsComparison = ({
             )
           })}
         </div>
-
-        <div className="mt-10 flex justify-center">
-          <button className="rounded-full bg-gradient-to-r from-yellow-400 to-yellow-500 px-6 py-3 font-bold text-black shadow-lg transition-all hover:scale-105 hover:from-yellow-500 hover:to-yellow-600">
-            Play Again
-          </button>
-        </div>
       </div>
     </div>
   )
