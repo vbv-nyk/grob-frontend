@@ -127,6 +127,8 @@ const useGame = (challengeId?: string) => {
     setCorrectCount(0)
     setIncorrectCount(0)
     setCurrentQuestionIndex(0)
+    setCorrectCity(null)
+    setIsCorrect(false)
     setIsGameOver(false)
     setChallengeUrl(null)
     setChallengerData(null)
