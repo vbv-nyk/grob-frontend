@@ -2,7 +2,6 @@ import { fetchQuestions } from 'api/gameApi'
 import { useState, useEffect } from 'react'
 
 interface Question {
-  _id: string
   city: string
   country: string
   clues: string[]
@@ -13,6 +12,7 @@ const useGame = () => {
   const [questions, setQuestions] = useState<Question[]>([])
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const [options, setOptions] = useState<string[]>([])
+  const [isGameOver, setIsGameOver] = useState(false)
   const [score, setScore] = useState(0)
 
   useEffect(() => {
@@ -41,9 +41,11 @@ const useGame = () => {
 
   const nextQuestion = () => {
     const nextIndex = currentQuestionIndex + 1
-    if (nextIndex < questions.length) {
+    if (nextIndex < 10 && nextIndex < questions.length) {
       setCurrentQuestionIndex(nextIndex)
       setOptions(generateOptions(questions[nextIndex], questions))
+    } else {
+      setIsGameOver(true)
     }
   }
 
@@ -52,7 +54,8 @@ const useGame = () => {
     options,
     score,
     handleAnswer,
-    nextQuestion
+    nextQuestion,
+    isGameOver
   }
 }
 
