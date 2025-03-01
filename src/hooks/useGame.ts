@@ -1,4 +1,5 @@
 import { fetchQuestions } from 'api/gameApi'
+import { BASE_API } from '../constants'
 import { useState, useEffect, useCallback } from 'react'
 
 export interface Question {
@@ -40,9 +41,7 @@ const useGame = (challengeId?: string) => {
 
   const loadChallengeData = useCallback(async (challengeId: string) => {
     try {
-      const response = await fetch(
-        `http://localhost:4000/challenge/${challengeId}`
-      )
+      const response = await fetch(`${BASE_API}/challenge/${challengeId}`)
       const data: ChallengerData = await response.json()
       const copiesData: ChallengerData = {
         ...data,
@@ -66,7 +65,7 @@ const useGame = (challengeId?: string) => {
     const currentQuestion = questions[currentQuestionIndex] // Get current question
 
     try {
-      const response = await fetch('http://localhost:4000/game/submit-answer', {
+      const response = await fetch(`${BASE_API}/game/submit-answer`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -132,7 +131,7 @@ const useGame = (challengeId?: string) => {
 
     console.log(questions)
     try {
-      const response = await fetch('http://localhost:4000/challenge/create', {
+      const response = await fetch(`${BASE_API}/challenge/create`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

@@ -1,6 +1,8 @@
+import { BASE_API } from '../constants'
+
 export const fetchQuestions = async () => {
   try {
-    const response = await fetch(`http://localhost:4000/game/start`)
+    const response = await fetch(`${BASE_API}/game/start`)
     const responseJson = await response.json()
     return responseJson
   } catch (error) {
