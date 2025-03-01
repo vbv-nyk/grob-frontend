@@ -1,7 +1,7 @@
 import useGame from 'hooks/useGame'
 import { useState } from 'react'
 import Confetti from 'react-confetti'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import QuizFeedback from 'components/QuizFeedback'
 
 const Game = () => {
@@ -45,7 +45,6 @@ const Game = () => {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gray-100 p-4">
-      {showConfetti && <Confetti />}
       <motion.h1
         className="mb-4 text-3xl font-bold"
         animate={{ opacity: 1, y: 0 }}
@@ -61,37 +60,47 @@ const Game = () => {
         Clue: {question.clues[0]}
       </motion.p>
       {/* <p className="mt-4 text-xl">Score: {score} / 10</p> */}
-      <div className="flex flex-wrap items-center justify-around">
-        <div
-          className={`mt-4 grid grid-cols-2 ${
-            selectedOption && 'flex-col'
-          }  justify-center gap-4`}
-        >
-          {options.map((option, index) => (
-            <motion.button
-              key={index}
-              onClick={() => handleSelection(option)}
-              className={`rounded-lg p-3 text-white shadow-md transition hover:scale-105 ${getButtonColor(
-                option
-              )}`}
-              disabled={!!selectedOption}
-              animate={{ scale: selectedOption ? 1.1 : 1 }}
-            >
-              {option}
-            </motion.button>
-          ))}
-        </div>
-        {selectedOption && (
-          <QuizFeedback
-            funFact={funFact}
-            nextQuestion={nextQuestion}
-            question={question}
-            selectedOption={selectedOption}
-            setShowConfetti={setShowConfetti}
-            setFunFact={setFunFact}
-            setSelectedOption={setSelectedOption}
-          />
-        )}
+      <div className="flex items-center justify-around">
+        {showConfetti && <Confetti />}
+        <AnimatePresence mode="wait">
+          <motion.div
+            className={`mt-4 grid grid-cols-2 ${
+              selectedOption && 'flex-col'
+            }  justify-center gap-4`}
+            initial={{ x: -0 }}
+            animate={{
+              scale: selectedOption ? 1 : 1.1,
+              x: selectedOption ? -20 : 0
+            }}
+            transition={{ duration: 0.5 }}
+          >
+            {options.map((option, index) => (
+              <button
+                key={index}
+                onClick={() => handleSelection(option)}
+                className={`rounded-lg p-3 text-white shadow-md transition hover:scale-105 ${getButtonColor(
+                  option
+                )}`}
+                disabled={!!selectedOption}
+              >
+                {option}
+              </button>
+            ))}
+          </motion.div>
+        </AnimatePresence>
+        <AnimatePresence>
+          {selectedOption && (
+            <QuizFeedback
+              funFact={funFact}
+              nextQuestion={nextQuestion}
+              question={question}
+              selectedOption={selectedOption}
+              setShowConfetti={setShowConfetti}
+              setFunFact={setFunFact}
+              setSelectedOption={setSelectedOption}
+            />
+          )}
+        </AnimatePresence>
       </div>
     </div>
   )
