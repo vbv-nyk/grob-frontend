@@ -16,9 +16,9 @@ Globetrotter is an engaging web application that challenges players to guess des
 - **Frontend**: React 18, TypeScript
 - **Styling**: TailwindCSS
 - **Build Tool**: Vite
-- **Testing**: Vitest, Testing Library
-- **State Management**: [Add your state management solution]
-- **Backend**: [Add your backend technology]
+<!-- - **Testing**: Vitest, Testing Library -->
+- **Backend**: Express.js
+- **Database**: MongoDB
 
 ### 🚀 Features
 
@@ -46,10 +46,10 @@ Globetrotter is an engaging web application that challenges players to guess des
 #### Installation
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/globetrotter.git
+git clone https://github.com/vbv-nyk/grob-frontend.git
 
 # Navigate to project directory
-cd globetrotter
+cd grob-frontend
 
 # Install dependencies
 pnpm install
@@ -68,12 +68,8 @@ pnpm run build
 ```
 
 ### 🌐 Deployment
-- Deployed on: [Deployment Platform]
-- Live URL: [Your Live URL]
-
-### 🧪 Testing
-- Unit Tests: Comprehensive test coverage
-- Integration Tests: [Describe your testing approach]
+- Deployed on: vercel
+- Live URL: https://grob-frontend.vercel.app/
 
 ### 🔮 Future Enhancements
 - Timed game mode
@@ -87,12 +83,10 @@ pnpm run build
 - Interactive User Experience Design
 
 ### 📫 Contact
-[Your Name]
-[Your Email/LinkedIn]
+Vaibhav Nayak
+vbv.nyk.2003@gmail.com
 
 ### 🙌 Acknowledgements
-- Assignment Inspiration: [Company Name]
-- AI Tools Used: [List AI tools]
+- Assignment Inspiration: Headout
+- AI Tools ChatGPT, Claude, Windsurf
 
-### 📜 License
-[Your Chosen License]
